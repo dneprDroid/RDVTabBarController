@@ -25,6 +25,15 @@
 #import "RDVTabBarItem.h"
 #import <objc/runtime.h>
 
+CGFloat defaultNavigationBarHeight() {
+    static CGFloat height = -1;
+    if (height == -1) {
+        height = [[UINavigationController new] navigationBar].frame.size.height;
+        height = height == 0 ? 44 : height;
+    }
+    return height;
+}
+
 @interface UIViewController (RDVTabBarControllerItemInternal)
 
 - (void)rdv_setTabBarController:(RDVTabBarController *)tabBarController;
@@ -62,22 +71,20 @@
     CGSize viewSize = self.view.bounds.size;
     CGFloat tabBarStartingY = viewSize.height;
     CGFloat contentViewHeight = viewSize.height;
-    CGFloat tabBarHeight = CGRectGetHeight([[self tabBar] frame]);
 
-    if (!tabBarHeight) {
-        if (@available(iOS 11.0, *)) {
-            CGFloat safeAreaBottom = UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom;
-            tabBarHeight = 58.f + safeAreaBottom / 1.5f;
-        } else {
-            tabBarHeight = 58.f;
-        }
-    } else if (@available(iOS 11.0, *)) {
-        CGFloat safeAreaBottom = UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom;
-        tabBarHeight = 58.f + safeAreaBottom / 1.5f;
+    CGFloat safeAreaBottom;
+
+    if (@available(iOS 11.0, *)) {
+        safeAreaBottom = UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom;
+    } else {
+        safeAreaBottom = 0;
     }
-
+    CGFloat tabBarHeight = UIApplication.sharedApplication.statusBarFrame.size.height +
+                            defaultNavigationBarHeight() -
+                            safeAreaBottom;
+    
     if (!self.tabBarHidden) {
-        tabBarStartingY = viewSize.height - tabBarHeight;
+        tabBarStartingY = viewSize.height - tabBarHeight - safeAreaBottom;
         if (![[self tabBar] isTranslucent]) {
             contentViewHeight -= ([[self tabBar] minimumContentHeight] ?: tabBarHeight);
         }
