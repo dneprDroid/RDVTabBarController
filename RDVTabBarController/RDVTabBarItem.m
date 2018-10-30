@@ -111,7 +111,8 @@
         titleAttributes = [self unselectedTitleAttributes];
     }
     
-    imageSize = [image size];
+    CGFloat imgW = frameSize.width * 0.45;
+    imageSize = CGSizeMake(imgW, imgW);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSaveGState(context);
