@@ -88,6 +88,7 @@ CGFloat defaultNavigationBarHeight() {
         if (![[self tabBar] isTranslucent]) {
             contentViewHeight -= ([[self tabBar] minimumContentHeight] ?: tabBarHeight);
         }
+        contentViewHeight -= safeAreaBottom;
     }
 
     [[self tabBar] setFrame:CGRectMake(0, tabBarStartingY, viewSize.width, tabBarHeight)];
